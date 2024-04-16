@@ -3,6 +3,8 @@ import example.*
 
 program pacman {
 	
+	game.title("Pacman!")
+	
 	// límites del juego
 	game.width(14)
 	game.height(8)
@@ -12,6 +14,29 @@ program pacman {
 	
 	// personaje principal
 	game.addVisualCharacter(pacman)
+	keyboard.up().onPressDo{pacman.cambiarImagen("pacmanArriba.png")}
+	keyboard.down().onPressDo{pacman.cambiarImagen("pacmanAbajo.png")}
+	keyboard.right().onPressDo{pacman.cambiarImagen("pacmanDerecha.png")}
+	keyboard.left().onPressDo{pacman.cambiarImagen("pacmanIzquierda.png")}
+
+	// rivales
+	const rivales = [new Rival(numero=1), new Rival(numero=2),new Rival(numero=3),new Rival(numero=4)]
+	
+	rivales.forEach { rival => 
+		game.addVisual(rival)
+		game.whenCollideDo(rival, { personaje =>
+			personaje.chocarCon(rival) // se maneja un método polimórfico
+		})
+		game.onTick(1.randomUpTo(5) * 300, "movimiento", {
+			rival.acercarseA(pacman)
+		})
+	}
+	
+	game.addVisual(cherry)
+	
+	game.whenCollideDo(cherry, { personaje =>
+		personaje.consumir(cherry)
+	})
 	
 	// que arranque el juego!
 	game.start()
